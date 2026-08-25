@@ -77,7 +77,7 @@ pub enum Block {
 impl Block {
     /// Attempts to read a block from the reader. Returns a tuple containing a boolean indicating
     /// if the block was the last block, the length of the block in bytes, and the new `Block`.
-    pub fn read_from(reader: &mut dyn Read) -> Result<(bool, u32, Block)> {
+    pub fn read_from<R: Read + ?Sized>(reader: &mut R) -> Result<(bool, u32, Block)> {
         let byte = reader.read_u8()?;
         let is_last = (byte & 0x80) != 0;
         let blocktype_byte = byte & 0x7F;
@@ -102,7 +102,7 @@ impl Block {
     }
 
     /// Attemps to write the block to the writer. Returns the length of the block in bytes.
-    pub fn write_to(&self, is_last: bool, writer: &mut dyn Write) -> Result<u32> {
+    pub fn write_to<W: Write + ?Sized>(&self, is_last: bool, writer: &mut W) -> Result<u32> {
         let (content_len, contents) = match *self {
             Block::StreamInfo(ref streaminfo) => {
                 let bytes = streaminfo.to_bytes();

@@ -410,7 +410,7 @@ impl<'a> Tag {
     }
 
     /// Attempts to read a FLAC tag from the reader.
-    pub fn read_from(reader: &mut dyn Read) -> Result<Tag> {
+    pub fn read_from<R: Read + ?Sized>(reader: &mut R) -> Result<Tag> {
         let mut tag = Tag::new();
 
         for result in Blocks::new(reader) {
@@ -423,7 +423,7 @@ impl<'a> Tag {
     }
 
     /// Attempts to write the FLAC tag to the writer.
-    pub fn write_to(&mut self, writer: &mut dyn Write) -> Result<()> {
+    pub fn write_to<W: Write + ?Sized>(&mut self, writer: &mut W) -> Result<()> {
         writer.write_all(b"fLaC")?;
 
         let nblocks = self.blocks.len();
